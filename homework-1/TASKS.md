@@ -179,17 +179,6 @@ curl http://localhost:3000/accounts/ACC-12345/balance
 
 ---
 
-## 📊 Grading Rubric
-
-| Criteria | Points | Description |
-|----------|--------|-------------|
-| ⚙️ **Task 1: Core API** | 25 | All endpoints working correctly |
-| ✅ **Task 2: Validation** | 15 | Proper validation with error messages |
-| 📜 **Task 3: Filtering** | 15 | Transaction filtering works as specified |
-| 💻 **Code Quality** | 5 | Clean, readable, well-organized code |
-| 📚 **Documentation & Demo** | 5 | Clear README, run instructions, screenshots |
-| **Total** | **100** | |
-
 ---
 
 ## 💡 Tips for Success

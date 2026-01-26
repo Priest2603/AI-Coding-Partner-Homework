@@ -2,23 +2,21 @@
 
 ## 📋 Overview
 
-Build a customer support ticket management system that imports tickets from multiple file formats, automatically categorizes issues, and assigns priorities. Focus on applying the **Context-Model-Prompt framework** while generating comprehensive tests and documentation using AI tools.
+Build a customer support ticket management system that imports tickets from multiple file formats, automatically categorizes issues, and assigns priorities. Focus on applying the **Context-Model-Prompt** while generating comprehensive tests and documentation using AI tools.
 
 ---
 
 ## 🎯 Learning Objectives
 
 - ✅ Master the **Context-Model-Prompt framework** in practice
-- ✅ Select appropriate AI models for different tasks
 - ✅ Generate comprehensive test suites with AI (>85% coverage)
-- ✅ Create multi-level documentation for different audiences
-- ✅ Compare AI tools and document your decision-making process
+- ✅ Create multi-level documentation
 
 ---
 
 ## 🛠️ Requirements
 
-**Tools:** Use at least 2 AI coding tools (Claude Code, GitHub Copilot, Cursor, Aider)
+**Tools:** Use AI coding tools
 
 **Tech Stack:** Choose one - Node.js/Express, Python/Flask/FastAPI, or Java/Spring Boot
 
@@ -26,7 +24,7 @@ Build a customer support ticket management system that imports tickets from mult
 
 ## 📝 Tasks
 
-### Task 1: Multi-Format Ticket Import API *(20 points)*
+### Task 1: Multi-Format Ticket Import API
 
 Create a REST API for support tickets with these endpoints:
 
@@ -71,14 +69,9 @@ Create a REST API for support tickets with these endpoints:
 - Handle malformed files gracefully with meaningful error messages
 - Use appropriate HTTP status codes (201, 400, 404, etc.)
 
-**Context-Model-Prompt Application:**
-Document which AI model you used for each format and why:
-- Small model (GPT-4o-mini/Haiku) for simple CSV parsing
-- Reasoning model (Claude Sonnet/o3-mini) for complex XML with namespaces
-
 ---
 
-### Task 2: Auto-Classification *(15 points)*
+### Task 2: Auto-Classification
 
 Implement automatic ticket categorization and priority assignment.
 
@@ -111,7 +104,7 @@ POST /tickets/:id/auto-classify
 
 ---
 
-### Task 3: AI-Generated Test Suite *(25 points)*
+### Task 3: AI-Generated Test Suite
 
 Generate comprehensive tests achieving **>85% code coverage**.
 
@@ -119,41 +112,23 @@ Generate comprehensive tests achieving **>85% code coverage**.
 
 ```
 tests/
-├── test_ticket_api.py          # API endpoints (11 tests)
-├── test_ticket_model.py        # Data validation (9 tests)
-├── test_import_csv.py          # CSV parsing (6 tests)
-├── test_import_json.py         # JSON parsing (5 tests)
-├── test_import_xml.py          # XML parsing (5 tests)
-├── test_categorization.py      # Classification (10 tests)
-├── test_integration.py         # End-to-end workflows (5 tests)
-├── test_performance.py         # Benchmarks (5 tests)
+├── test_ticket_api          # API endpoints (11 tests)
+├── test_ticket_model        # Data validation (9 tests)
+├── test_import_csv          # CSV parsing (6 tests)
+├── test_import_json         # JSON parsing (5 tests)
+├── test_import_xml          # XML parsing (5 tests)
+├── test_categorization      # Classification (10 tests)
+├── test_integration         # End-to-end workflows (5 tests)
+├── test_performance         # Benchmarks (5 tests)
 └── fixtures/                   # Sample data files
 ```
 
 **Test Coverage Requirements:**
 - Overall: >85%
-- Critical paths (create, import): >95%
-- Edge cases and error handling: >80%
-
-**Must Test:**
-- Valid and invalid inputs for all endpoints
-- All three file format imports (including malformed files)
-- Classification accuracy for each category
-- Priority assignment for keyword combinations
-- Full ticket lifecycle (create → classify → update → resolve)
-- Bulk import with auto-classification
-- Concurrent ticket creation (20+ tickets)
-- Performance: 1000 ticket import in <5 seconds
-- Performance: Classification in <200ms
-
-**AI Requirements:**
-- Use at least 2 different AI tools for test generation
-- Document which tool worked better and why
-- Include your prompting strategy in AI_WORKFLOW_JOURNAL.md
 
 ---
 
-### Task 4: Multi-Level Documentation *(20 points)*
+### Task 4: Multi-Level Documentation
 
 Generate 5 documentation files for different audiences:
 
@@ -184,23 +159,13 @@ Generate 5 documentation files for different audiences:
 - Manual testing checklist
 - Performance benchmarks table
 
-**5. AI_WORKFLOW_JOURNAL.md** (Learning Documentation)
-- Context-Model-Prompt examples for 3+ major tasks
-- Prompt iterations showing refinement
-- Model comparison table (small vs reasoning models)
-- Tools comparison (Claude Code vs Copilot, etc.)
-- Reusable prompt library (5-10 templates)
-- Lessons learned
-- Time tracking comparison (manual vs AI-assisted)
-
 **Requirements:**
 - Use different AI models for different doc types
 - Include at least 3 Mermaid diagrams across documents
-- Document which model generated each doc and why
 
 ---
 
-### Task 5: Integration & Performance Tests *(10 points)*
+### Task 5: Integration & Performance Tests
 
 Implement end-to-end tests.
 
@@ -227,20 +192,6 @@ Implement end-to-end tests.
 - Invalid data files for negative tests
 
 ---
-
-## 📊 Grading Rubric
-
-| Criteria | Points |
-|----------|--------|
-| **Task 1:** Multi-Format Import | 20 |
-| **Task 2:** Auto-Classification | 15 |
-| **Task 3:** Test Suite (>85% coverage) | 25 |
-| **Task 4:** Documentation (5 files) | 20 |
-| **Task 5:** Integration & Performance | 10 |
-| **AI Workflow Journal** | 10 |
-| **Code Quality** | 5 |
-| **Total** | **100** |
-
 
 <div align="center">
 
