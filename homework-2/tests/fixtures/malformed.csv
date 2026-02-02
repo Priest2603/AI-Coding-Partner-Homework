@@ -1,0 +1,3 @@
+customer_id,customer_email,customer_name
+CUST001,test@example.com,"Unclosed quote
+CUST002,another@example.com,Valid Name

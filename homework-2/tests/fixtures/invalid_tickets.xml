@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tickets>
+  <ticket>
+    <customer_id>CUST001</customer_id>
+    <customer_email>not-valid-email</customer_email>
+    <customer_name>Test User</customer_name>
+    <subject>Test</subject>
+    <description>Too short description</description>
+    <category>invalid_category</category>
+    <priority>high</priority>
+    <status>new</status>
+    <tags></tags>
+    <metadata>
+      <source>web_form</source>
+      <device_type>desktop</device_type>
+    </metadata>
+  </ticket>
+</tickets>

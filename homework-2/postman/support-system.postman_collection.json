@@ -1,0 +1,1243 @@
+{
+  "info": {
+    "name": "Intelligent Customer Support System",
+    "description": "Complete API collection for the customer support ticket management system with multi-format import and auto-classification",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Basic Operations",
+      "item": [
+        {
+          "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["health"]
+        },
+        "description": "Check if the server is running"
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Response has correct schema', function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('status');",
+              "    pm.expect(jsonData.status).to.equal('ok');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Create Ticket",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"customer_id\": \"CUST001\",\n  \"customer_email\": \"john.doe@example.com\",\n  \"customer_name\": \"John Doe\",\n  \"subject\": \"Cannot access my account\",\n  \"description\": \"I've been trying to log in for the past hour but keep getting an error message saying my credentials are invalid.\",\n  \"category\": \"account_access\",\n  \"priority\": \"high\",\n  \"status\": \"new\",\n  \"tags\": [\"login\", \"urgent\"],\n  \"metadata\": {\n    \"source\": \"web_form\",\n    \"browser\": \"Chrome 120\",\n    \"device_type\": \"desktop\"\n  }\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/tickets",
+          "host": ["{{baseUrl}}"],
+          "path": ["tickets"]
+        },
+        "description": "Create a new support ticket"
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 201', function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "",
+              "pm.test('Response has correct schema', function () {",
+              "    const jsonData = pm.response.json();",
+              "    ",
+              "    // Required fields",
+              "    pm.expect(jsonData).to.have.property('id');",
+              "    pm.expect(jsonData).to.have.property('customer_id');",
+              "    pm.expect(jsonData).to.have.property('customer_email');",
+              "    pm.expect(jsonData).to.have.property('customer_name');",
+              "    pm.expect(jsonData).to.have.property('subject');",
+              "    pm.expect(jsonData).to.have.property('description');",
+              "    pm.expect(jsonData).to.have.property('category');",
+              "    pm.expect(jsonData).to.have.property('priority');",
+              "    pm.expect(jsonData).to.have.property('status');",
+              "    pm.expect(jsonData).to.have.property('created_at');",
+              "    pm.expect(jsonData).to.have.property('updated_at');",
+              "    pm.expect(jsonData).to.have.property('tags');",
+              "    pm.expect(jsonData).to.have.property('metadata');",
+              "    ",
+              "    // Validate types",
+              "    pm.expect(jsonData.id).to.be.a('string');",
+              "    pm.expect(jsonData.customer_email).to.match(/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/);",
+              "    pm.expect(jsonData.tags).to.be.an('array');",
+              "    pm.expect(jsonData.metadata).to.be.an('object');",
+              "    ",
+              "    // Save ticket ID for subsequent requests",
+              "    pm.collectionVariables.set('ticketId', jsonData.id);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get All Tickets",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/tickets",
+          "host": ["{{baseUrl}}"],
+          "path": ["tickets"]
+        },
+        "description": "Retrieve all tickets"
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Response is an array', function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.be.an('array');",
+              "});",
+              "",
+              "pm.test('Each ticket has required fields', function () {",
+              "    const jsonData = pm.response.json();",
+              "    ",
+              "    if (jsonData.length > 0) {",
+              "        const ticket = jsonData[0];",
+              "        pm.expect(ticket).to.have.property('id');",
+              "        pm.expect(ticket).to.have.property('customer_email');",
+              "        pm.expect(ticket).to.have.property('subject');",
+              "        pm.expect(ticket).to.have.property('description');",
+              "        pm.expect(ticket).to.have.property('category');",
+              "        pm.expect(ticket).to.have.property('priority');",
+              "        pm.expect(ticket).to.have.property('status');",
+              "    }",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get Ticket by ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/tickets/{{ticketId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["tickets", "{{ticketId}}"]
+        },
+        "description": "Retrieve a specific ticket by ID"
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Response has correct schema and ID matches', function () {",
+              "    const jsonData = pm.response.json();",
+              "    const expectedId = pm.collectionVariables.get('ticketId');",
+              "    ",
+              "    pm.expect(jsonData).to.have.property('id');",
+              "    pm.expect(jsonData.id).to.equal(expectedId);",
+              "    pm.expect(jsonData).to.have.property('customer_email');",
+              "    pm.expect(jsonData).to.have.property('subject');",
+              "    pm.expect(jsonData).to.have.property('description');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Update Ticket",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"in_progress\",\n  \"assigned_to\": \"support@example.com\",\n  \"priority\": \"urgent\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/tickets/{{ticketId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["tickets", "{{ticketId}}"]
+        },
+        "description": "Update an existing ticket"
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Ticket was updated correctly', function () {",
+              "    const jsonData = pm.response.json();",
+              "    ",
+              "    pm.expect(jsonData).to.have.property('id');",
+              "    pm.expect(jsonData.status).to.equal('in_progress');",
+              "    pm.expect(jsonData.assigned_to).to.equal('support@example.com');",
+              "    pm.expect(jsonData.priority).to.equal('urgent');",
+              "    pm.expect(jsonData).to.have.property('updated_at');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auto-Classify Ticket",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/tickets/{{ticketId}}/auto-classify",
+          "host": ["{{baseUrl}}"],
+          "path": ["tickets", "{{ticketId}}", "auto-classify"]
+        },
+        "description": "Automatically classify a ticket's category and priority"
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Classification response has required fields', function () {",
+              "    const jsonData = pm.response.json();",
+              "    ",
+              "    pm.expect(jsonData).to.have.property('ticket');",
+              "    pm.expect(jsonData).to.have.property('classification');",
+              "    ",
+              "    const classification = jsonData.classification;",
+              "    pm.expect(classification).to.have.property('category');",
+              "    pm.expect(classification).to.have.property('priority');",
+              "    pm.expect(classification).to.have.property('confidence');",
+              "    pm.expect(classification).to.have.property('reasoning');",
+              "    pm.expect(classification).to.have.property('keywords_found');",
+              "    ",
+              "    // Validate confidence is between 0 and 1",
+              "    pm.expect(classification.confidence).to.be.a('number');",
+              "    pm.expect(classification.confidence).to.be.at.least(0);",
+              "    pm.expect(classification.confidence).to.be.at.most(1);",
+              "    ",
+              "    // Validate arrays",
+              "    pm.expect(classification.keywords_found).to.be.an('array');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Delete Ticket",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/tickets/{{ticketId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["tickets", "{{ticketId}}"]
+        },
+        "description": "Delete a ticket"
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 204', function () {",
+              "    pm.response.to.have.status(204);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Verify Ticket Deleted",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/tickets/{{ticketId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["tickets", "{{ticketId}}"]
+        },
+        "description": "Verify that the deleted ticket returns 404"
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 404 (ticket not found)', function () {",
+              "    pm.response.to.have.status(404);",
+              "});",
+              "",
+              "pm.test('Error response has correct structure', function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.have.property('error');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    }
+      ]
+    },
+    {
+      "name": "2. Import Operations",
+      "item": [
+        {
+          "name": "Import Tickets (CSV)",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "src": []
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/tickets/import?auto_classify=true",
+          "host": ["{{baseUrl}}"],
+          "path": ["tickets", "import"],
+          "query": [
+            {
+              "key": "auto_classify",
+              "value": "true"
+            }
+          ]
+        },
+        "description": "Bulk import tickets from CSV file.\n\n**IMPORTANT**: You must manually select a file in Postman:\n1. In the Body tab, click the \"Select Files\" button next to the \"file\" field\n2. Navigate to: tests/fixtures/valid_tickets.csv in the project directory\n3. Or use tests/fixtures/valid_tickets.json or valid_tickets.xml\n\nPostman cannot auto-resolve relative file paths from the collection."
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('Import summary has correct schema', function () {",
+              "    const jsonData = pm.response.json();",
+              "    ",
+              "    pm.expect(jsonData).to.have.property('summary');",
+              "    const summary = jsonData.summary;",
+              "    ",
+              "    pm.expect(summary).to.have.property('total');",
+              "    pm.expect(summary).to.have.property('successful');",
+              "    pm.expect(summary).to.have.property('failed');",
+              "    pm.expect(summary.total).to.be.a('number');",
+              "    pm.expect(summary.successful).to.be.a('number');",
+              "    pm.expect(summary.failed).to.be.a('number');",
+              "    ",
+              "    pm.expect(jsonData).to.have.property('tickets');",
+              "    pm.expect(jsonData.tickets).to.be.an('array');",
+              "    ",
+              "    if (jsonData.errors) {",
+              "        pm.expect(jsonData.errors).to.be.an('array');",
+              "    }",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+        },
+        {
+          "name": "Import Tickets (JSON)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tickets/import",
+              "host": ["{{baseUrl}}"],
+              "path": ["tickets", "import"]
+            },
+            "description": "Import tickets from JSON file. Manually select tests/fixtures/valid_tickets.json"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Import was successful', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.summary.successful).to.be.above(0);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Import Tickets (XML)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tickets/import",
+              "host": ["{{baseUrl}}"],
+              "path": ["tickets", "import"]
+            },
+            "description": "Import tickets from XML file. Manually select tests/fixtures/valid_tickets.xml"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Import was successful', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.summary.successful).to.be.above(0);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Import Invalid Tickets (Error Handling)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tickets/import",
+              "host": ["{{baseUrl}}"],
+              "path": ["tickets", "import"]
+            },
+            "description": "Import invalid tickets to test error handling. Manually select tests/fixtures/invalid_tickets.csv"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200 (partial success)', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Import summary shows failures', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.summary.failed).to.be.above(0);",
+                  "    pm.expect(jsonData.errors).to.be.an('array');",
+                  "    pm.expect(jsonData.errors.length).to.be.above(0);",
+                  "});",
+                  "",
+                  "pm.test('Error records include line number and reason', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    if (jsonData.errors && jsonData.errors.length > 0) {",
+                  "        const error = jsonData.errors[0];",
+                  "        pm.expect(error).to.have.property('line');",
+                  "        pm.expect(error).to.have.property('reason');",
+                  "    }",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Import with No File (Error)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/tickets/import",
+              "host": ["{{baseUrl}}"],
+              "path": ["tickets", "import"]
+            },
+            "description": "Test error handling when no file is provided"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 400', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test('Error message is clear', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('error');",
+                  "    pm.expect(jsonData.error).to.include('No file uploaded');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "3. Filtering & Queries",
+      "item": [
+        {
+          "name": "Filter Tickets by Category",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/tickets?category=account_access",
+          "host": ["{{baseUrl}}"],
+          "path": ["tickets"],
+          "query": [
+            {
+              "key": "category",
+              "value": "account_access"
+            }
+          ]
+        },
+        "description": "Get tickets filtered by category"
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('All returned tickets have correct category', function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.be.an('array');",
+              "    ",
+              "    jsonData.forEach(function(ticket) {",
+              "        pm.expect(ticket.category).to.equal('account_access');",
+              "    });",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Filter Tickets by Priority",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/tickets?priority=urgent",
+          "host": ["{{baseUrl}}"],
+          "path": ["tickets"],
+          "query": [
+            {
+              "key": "priority",
+              "value": "urgent"
+            }
+          ]
+        },
+        "description": "Get tickets filtered by priority"
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "pm.test('All returned tickets have correct priority', function () {",
+              "    const jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.be.an('array');",
+              "    ",
+              "    jsonData.forEach(function(ticket) {",
+              "        pm.expect(ticket.priority).to.equal('urgent');",
+              "    });",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+        },
+        {
+          "name": "Filter by Multiple Criteria",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/tickets?category=technical_issue&priority=urgent&status=new",
+              "host": ["{{baseUrl}}"],
+              "path": ["tickets"],
+              "query": [
+                {
+                  "key": "category",
+                  "value": "technical_issue"
+                },
+                {
+                  "key": "priority",
+                  "value": "urgent"
+                },
+                {
+                  "key": "status",
+                  "value": "new"
+                }
+              ]
+            },
+            "description": "Test filtering with multiple criteria"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('All filters applied correctly', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.be.an('array');",
+                  "    ",
+                  "    jsonData.forEach(function(ticket) {",
+                  "        pm.expect(ticket.category).to.equal('technical_issue');",
+                  "        pm.expect(ticket.priority).to.equal('urgent');",
+                  "        pm.expect(ticket.status).to.equal('new');",
+                  "    });",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Filter with Invalid Category (Error)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/tickets?category=invalid_category",
+              "host": ["{{baseUrl}}"],
+              "path": ["tickets"],
+              "query": [
+                {
+                  "key": "category",
+                  "value": "invalid_category"
+                }
+              ]
+            },
+            "description": "Test error handling for invalid filter values"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 400', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test('Error message mentions invalid category', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('error');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "4. Error Handling & Validation",
+      "item": [
+        {
+          "name": "Create Ticket with Missing Required Fields",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customer_id\": \"CUST001\",\n  \"subject\": \"Test\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tickets",
+              "host": ["{{baseUrl}}"],
+              "path": ["tickets"]
+            },
+            "description": "Test validation for missing required fields"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 400', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test('Error indicates missing fields', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('error');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Ticket with Invalid Email",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customer_id\": \"CUST001\",\n  \"customer_email\": \"invalid-email\",\n  \"customer_name\": \"John Doe\",\n  \"subject\": \"Test ticket\",\n  \"description\": \"This is a test ticket with an invalid email address.\",\n  \"category\": \"technical_issue\",\n  \"priority\": \"medium\",\n  \"status\": \"new\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tickets",
+              "host": ["{{baseUrl}}"],
+              "path": ["tickets"]
+            },
+            "description": "Test email validation"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 400', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test('Error mentions email validation', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('error');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Ticket with Subject Too Short",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customer_id\": \"CUST001\",\n  \"customer_email\": \"test@example.com\",\n  \"customer_name\": \"John Doe\",\n  \"subject\": \"\",\n  \"description\": \"This is a test ticket with an empty subject.\",\n  \"category\": \"technical_issue\",\n  \"priority\": \"medium\",\n  \"status\": \"new\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tickets",
+              "host": ["{{baseUrl}}"],
+              "path": ["tickets"]
+            },
+            "description": "Test subject length validation (1-200 chars)"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 400', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test('Error mentions subject validation', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('error');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Ticket with Description Too Short",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customer_id\": \"CUST001\",\n  \"customer_email\": \"test@example.com\",\n  \"customer_name\": \"John Doe\",\n  \"subject\": \"Test ticket\",\n  \"description\": \"Short\",\n  \"category\": \"technical_issue\",\n  \"priority\": \"medium\",\n  \"status\": \"new\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tickets",
+              "host": ["{{baseUrl}}"],
+              "path": ["tickets"]
+            },
+            "description": "Test description length validation (10-2000 chars)"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 400', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test('Error mentions description validation', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('error');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Non-Existent Ticket",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/tickets/non-existent-id-12345",
+              "host": ["{{baseUrl}}"],
+              "path": ["tickets", "non-existent-id-12345"]
+            },
+            "description": "Test 404 error handling"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 404', function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});",
+                  "",
+                  "pm.test('Error message is clear', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('error');",
+                  "    pm.expect(jsonData.error).to.include('not found');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Non-Existent Ticket",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"resolved\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tickets/non-existent-id-12345",
+              "host": ["{{baseUrl}}"],
+              "path": ["tickets", "non-existent-id-12345"]
+            },
+            "description": "Test updating non-existent ticket"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 404', function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});",
+                  "",
+                  "pm.test('Error response is structured correctly', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('error');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete Non-Existent Ticket",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/tickets/non-existent-id-12345",
+              "host": ["{{baseUrl}}"],
+              "path": ["tickets", "non-existent-id-12345"]
+            },
+            "description": "Test deleting non-existent ticket"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 404', function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "5. Auto-Classification Tests",
+      "item": [
+        {
+          "name": "Create & Auto-Classify (Account Access)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customer_id\": \"CUST002\",\n  \"customer_email\": \"jane@example.com\",\n  \"customer_name\": \"Jane Smith\",\n  \"subject\": \"Can't access my account - password reset not working\",\n  \"description\": \"I've been trying to reset my password but the link in the email is not working. I can't login to my account.\",\n  \"status\": \"new\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tickets?auto_classify=true",
+              "host": ["{{baseUrl}}"],
+              "path": ["tickets"],
+              "query": [
+                {
+                  "key": "auto_classify",
+                  "value": "true"
+                }
+              ]
+            },
+            "description": "Test auto-classification with account access keywords"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Ticket classified as account_access', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.category).to.equal('account_access');",
+                  "});",
+                  "",
+                  "pm.test('Priority set correctly', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(['high', 'urgent']).to.include(jsonData.priority);",
+                  "});",
+                  "",
+                  "// Save for classification test",
+                  "pm.collectionVariables.set('classifyTicketId', pm.response.json().id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create & Auto-Classify (Billing)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customer_id\": \"CUST003\",\n  \"customer_email\": \"bob@example.com\",\n  \"customer_name\": \"Bob Johnson\",\n  \"subject\": \"Question about my invoice\",\n  \"description\": \"I was charged twice this month. Can you please check my payment history and issue a refund?\",\n  \"status\": \"new\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tickets?auto_classify=true",
+              "host": ["{{baseUrl}}"],
+              "path": ["tickets"],
+              "query": [
+                {
+                  "key": "auto_classify",
+                  "value": "true"
+                }
+              ]
+            },
+            "description": "Test auto-classification with billing keywords"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Ticket classified as billing_question', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.category).to.equal('billing_question');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create & Auto-Classify (Critical Bug)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customer_id\": \"CUST004\",\n  \"customer_email\": \"alice@example.com\",\n  \"customer_name\": \"Alice Williams\",\n  \"subject\": \"CRITICAL: Production system is down\",\n  \"description\": \"Our entire production environment crashed. This is a critical security issue affecting all users. Please help ASAP!\",\n  \"status\": \"new\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tickets?auto_classify=true",
+              "host": ["{{baseUrl}}"],
+              "path": ["tickets"],
+              "query": [
+                {
+                  "key": "auto_classify",
+                  "value": "true"
+                }
+              ]
+            },
+            "description": "Test auto-classification with critical/urgent keywords"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Priority set to urgent', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.priority).to.equal('urgent');",
+                  "});",
+                  "",
+                  "pm.test('Category is technical_issue or bug_report', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(['technical_issue', 'bug_report']).to.include(jsonData.category);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Reclassify Existing Ticket",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/tickets/{{classifyTicketId}}/auto-classify",
+              "host": ["{{baseUrl}}"],
+              "path": ["tickets", "{{classifyTicketId}}", "auto-classify"]
+            },
+            "description": "Test reclassification endpoint"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Classification details provided', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.classification).to.have.property('confidence');",
+                  "    pm.expect(jsonData.classification).to.have.property('keywords_found');",
+                  "    pm.expect(jsonData.classification).to.have.property('reasoning');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "ticketId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "classifyTicketId",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}

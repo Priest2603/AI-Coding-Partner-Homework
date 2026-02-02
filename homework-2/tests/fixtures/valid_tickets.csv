@@ -1,0 +1,4 @@
+customer_id,customer_email,customer_name,subject,description,category,priority,status,assigned_to,tags,metadata_source,metadata_browser,metadata_device_type
+CUST001,john@example.com,John Doe,Cannot login,I cannot access my account after password reset,account_access,urgent,new,,login|password,web_form,Chrome,desktop
+CUST002,jane@example.com,Jane Smith,Payment failed,My credit card payment was declined,billing_question,high,new,agent1,payment|billing,email,Safari,mobile
+CUST003,bob@example.com,Bob Johnson,App crashes on startup,The mobile app crashes immediately after launching,technical_issue,high,in_progress,agent2,crash|mobile,chat,Firefox,tablet

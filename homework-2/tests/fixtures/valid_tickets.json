@@ -1,0 +1,36 @@
+[
+  {
+    "customer_id": "CUST001",
+    "customer_email": "alice@example.com",
+    "customer_name": "Alice Brown",
+    "subject": "Feature request for dark mode",
+    "description": "I would love to see a dark mode option in the application settings.",
+    "category": "feature_request",
+    "priority": "low",
+    "status": "new",
+    "assigned_to": null,
+    "tags": ["feature", "ui"],
+    "metadata": {
+      "source": "web_form",
+      "browser": "Chrome",
+      "device_type": "desktop"
+    }
+  },
+  {
+    "customer_id": "CUST002",
+    "customer_email": "charlie@example.com",
+    "customer_name": "Charlie Davis",
+    "subject": "Bug in search functionality",
+    "description": "Search results are not displaying correctly when using special characters.",
+    "category": "bug_report",
+    "priority": "medium",
+    "status": "new",
+    "assigned_to": "agent3",
+    "tags": ["bug", "search"],
+    "metadata": {
+      "source": "api",
+      "browser": "Firefox",
+      "device_type": "desktop"
+    }
+  }
+]
