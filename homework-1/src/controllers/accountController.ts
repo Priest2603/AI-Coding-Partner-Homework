@@ -8,45 +8,74 @@ import { getTransactionsByAccount } from '../utils/dataStore';
 export function calculateAccountBalance(accountId: string): BalanceResponse {
   const transactions = getTransactionsByAccount(accountId);
 
-  // Calculate balance
-  let balance = 0;
-  let currency = 'USD'; // Default currency
+  // Track balances per currency to avoid mixing currencies
+  const balancesByCurrency: Record<string, number> = {};
 
   for (const transaction of transactions) {
-    currency = transaction.currency; // Use the currency from transactions
+    const currency = transaction.currency;
+    
+    // Initialize currency balance if not present
+    if (!(currency in balancesByCurrency)) {
+      balancesByCurrency[currency] = 0;
+    }
 
     switch (transaction.type) {
       case TransactionType.DEPOSIT:
         // Deposits add to the account
         if (transaction.toAccount === accountId) {
-          balance += transaction.amount;
+          balancesByCurrency[currency] += transaction.amount;
         }
         break;
 
       case TransactionType.WITHDRAWAL:
         // Withdrawals subtract from the account
         if (transaction.fromAccount === accountId) {
-          balance -= transaction.amount;
+          balancesByCurrency[currency] -= transaction.amount;
         }
         break;
 
       case TransactionType.TRANSFER:
         // Transfers out subtract, transfers in add
         if (transaction.fromAccount === accountId) {
-          balance -= transaction.amount;
+          balancesByCurrency[currency] -= transaction.amount;
         }
         if (transaction.toAccount === accountId) {
-          balance += transaction.amount;
+          balancesByCurrency[currency] += transaction.amount;
         }
         break;
     }
   }
 
+  // Round all balances to 2 decimal places
+  for (const currency in balancesByCurrency) {
+    balancesByCurrency[currency] = Math.round(balancesByCurrency[currency] * 100) / 100;
+  }
+
+  const currencies = Object.keys(balancesByCurrency);
+
+  // If account has only one currency, return simple response
+  if (currencies.length === 1) {
+    return {
+      accountId,
+      balance: balancesByCurrency[currencies[0]],
+      currency: currencies[0],
+      transactionCount: transactions.length
+    };
+  }
+
+  // If multiple currencies, use the first one but this indicates a design issue
+  // In a real system, you'd want to update BalanceResponse to support multiple currencies
+  // For now, reject mixed-currency accounts with an error
+  if (currencies.length > 1) {
+    throw new Error(`Account ${accountId} has transactions in multiple currencies (${currencies.join(', ')}). Please use the summary endpoint for multi-currency accounts.`);
+  }
+
+  // No transactions case
   return {
     accountId,
-    balance: Math.round(balance * 100) / 100, // Round to 2 decimal places
-    currency,
-    transactionCount: transactions.length
+    balance: 0,
+    currency: 'USD', // Default currency
+    transactionCount: 0
   };
 }
 
