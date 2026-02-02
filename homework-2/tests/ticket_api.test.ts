@@ -151,6 +151,60 @@ describe('Ticket API Endpoints', () => {
         .send({ status: 'resolved' })
         .expect(404);
     });
+
+    it('should preserve existing status when updating other fields', async () => {
+      const createResponse = await request(app).post('/tickets').send(validTicket);
+      const ticketId = createResponse.body.id;
+
+      // Update only assigned_to field
+      const response = await request(app)
+        .put(`/tickets/${ticketId}`)
+        .send({ assigned_to: 'agent123' })
+        .expect(200);
+
+      // Status should remain unchanged from original 'new'
+      expect(response.body.assigned_to).toBe('agent123');
+      expect(response.body.status).toBe('new');
+      expect(response.body.tags).toEqual(['login', 'urgent']);
+    });
+
+    it('should preserve existing tags when updating other fields', async () => {
+      const createResponse = await request(app).post('/tickets').send(validTicket);
+      const ticketId = createResponse.body.id;
+
+      // Update only priority field
+      const response = await request(app)
+        .put(`/tickets/${ticketId}`)
+        .send({ priority: 'urgent' })
+        .expect(200);
+
+      // Tags should remain unchanged
+      expect(response.body.priority).toBe('urgent');
+      expect(response.body.tags).toEqual(['login', 'urgent']);
+      expect(response.body.status).toBe('new');
+    });
+
+    it('should allow partial updates without resetting defaults', async () => {
+      // Create ticket with specific status and tags
+      const ticketWithCustomFields = {
+        ...validTicket,
+        status: 'in_progress',
+        tags: ['vip', 'critical', 'escalated']
+      };
+      const createResponse = await request(app).post('/tickets').send(ticketWithCustomFields);
+      const ticketId = createResponse.body.id;
+
+      // Update only the subject
+      const response = await request(app)
+        .put(`/tickets/${ticketId}`)
+        .send({ subject: 'Updated subject line' })
+        .expect(200);
+
+      // All other fields should be preserved
+      expect(response.body.subject).toBe('Updated subject line');
+      expect(response.body.status).toBe('in_progress');
+      expect(response.body.tags).toEqual(['vip', 'critical', 'escalated']);
+    });
   });
 
   describe('DELETE /tickets/:id', () => {

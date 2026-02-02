@@ -80,13 +80,21 @@ export const parseXML = (content: string): ParseResult => {
           priority: record.priority,
           status: record.status,
           assigned_to: record.assigned_to || null,
-          tags: record.tags ? (Array.isArray(record.tags.tag) ? record.tags.tag : [record.tags.tag]) : [],
-          metadata: {
-            source: record.metadata?.source || record.source,
-            browser: record.metadata?.browser || record.browser,
-            device_type: record.metadata?.device_type || record.device_type
-          }
+          tags: record.tags ? (Array.isArray(record.tags.tag) ? record.tags.tag : [record.tags.tag]) : []
         };
+
+        // Only add metadata if at least one metadata field is present
+        const metadataSource = record.metadata?.source || record.source;
+        const metadataBrowser = record.metadata?.browser || record.browser;
+        const metadataDeviceType = record.metadata?.device_type || record.device_type;
+        
+        if (metadataSource || metadataBrowser || metadataDeviceType) {
+          ticketData.metadata = {
+            source: metadataSource,
+            browser: metadataBrowser,
+            device_type: metadataDeviceType
+          };
+        }
 
         // Validate with Zod
         const validated = CreateTicketSchema.parse(ticketData);

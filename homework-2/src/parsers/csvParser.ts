@@ -89,13 +89,21 @@ export const parseCSV = (content: string): ParseResult => {
           priority: record.priority,
           status: record.status,
           assigned_to: record.assigned_to || null,
-          tags: record.tags || [],
-          metadata: {
-            source: record.metadata_source || record.source,
-            browser: record.metadata_browser || record.browser,
-            device_type: record.metadata_device_type || record.device_type
-          }
+          tags: record.tags || []
         };
+
+        // Only add metadata if at least one metadata field is present
+        const metadataSource = record.metadata_source || record.source;
+        const metadataBrowser = record.metadata_browser || record.browser;
+        const metadataDeviceType = record.metadata_device_type || record.device_type;
+        
+        if (metadataSource || metadataBrowser || metadataDeviceType) {
+          ticketData.metadata = {
+            source: metadataSource,
+            browser: metadataBrowser,
+            device_type: metadataDeviceType
+          };
+        }
 
         // Validate with Zod
         const validated = CreateTicketSchema.parse(ticketData);

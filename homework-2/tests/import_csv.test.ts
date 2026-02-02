@@ -79,4 +79,39 @@ describe('CSV Import', () => {
     expect(response.body.errors[0].reason).toBeTruthy();
     expect(typeof response.body.errors[0].reason).toBe('string');
   });
+
+  it('should successfully import CSV without metadata fields', async () => {
+    const csvPath = path.join(__dirname, 'fixtures', 'no_metadata_tickets.csv');
+    const response = await request(app)
+      .post('/tickets/import')
+      .attach('file', csvPath)
+      .expect(201);
+
+    expect(response.body.successful).toBe(2);
+    expect(response.body.failed).toBe(0);
+    expect(response.body.tickets).toHaveLength(2);
+
+    // Verify tickets don't have metadata field
+    const firstTicket = response.body.tickets[0];
+    expect(firstTicket.metadata).toBeUndefined();
+    expect(firstTicket.customer_email).toBe('alice@example.com');
+    expect(firstTicket.tags).toEqual(['analytics', 'dashboard']);
+  });
+
+  it('should handle CSV with mixed metadata presence', async () => {
+    // Test that parser handles rows without metadata gracefully
+    const csvPath = path.join(__dirname, 'fixtures', 'no_metadata_tickets.csv');
+    const response = await request(app)
+      .post('/tickets/import')
+      .attach('file', csvPath)
+      .expect(201);
+
+    // All tickets should import successfully even without metadata
+    response.body.tickets.forEach((ticket: any) => {
+      expect(ticket).toHaveProperty('customer_id');
+      expect(ticket).toHaveProperty('customer_email');
+      expect(ticket).toHaveProperty('subject');
+      expect(ticket).not.toHaveProperty('metadata');
+    });
+  });
 });

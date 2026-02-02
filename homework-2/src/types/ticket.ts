@@ -63,7 +63,11 @@ export const TicketSchema = CreateTicketSchema.extend({
 });
 
 // Update ticket schema (all fields optional except validated ones)
-export const UpdateTicketSchema = CreateTicketSchema.partial();
+// Remove defaults to prevent partial updates from overwriting existing values
+export const UpdateTicketSchema = CreateTicketSchema.partial().omit({}).extend({
+  status: StatusSchema.optional(),
+  tags: z.array(z.string()).optional()
+});
 
 // TypeScript types
 export type Category = z.infer<typeof CategorySchema>;

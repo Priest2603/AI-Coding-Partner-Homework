@@ -67,4 +67,39 @@ describe('XML Import', () => {
     expect(firstTicket.metadata).toHaveProperty('source');
     expect(firstTicket.metadata).toHaveProperty('device_type');
   });
+
+  it('should successfully import XML without metadata elements', async () => {
+    const xmlPath = path.join(__dirname, 'fixtures', 'no_metadata_tickets.xml');
+    const response = await request(app)
+      .post('/tickets/import')
+      .attach('file', xmlPath)
+      .expect(201);
+
+    expect(response.body.successful).toBe(2);
+    expect(response.body.failed).toBe(0);
+    expect(response.body.tickets).toHaveLength(2);
+
+    // Verify tickets don't have metadata field
+    const firstTicket = response.body.tickets[0];
+    expect(firstTicket.metadata).toBeUndefined();
+    expect(firstTicket.customer_email).toBe('diana@example.com');
+    expect(firstTicket.tags).toEqual(['password', 'recovery']);
+  });
+
+  it('should handle XML tickets without metadata gracefully', async () => {
+    // Test that parser handles XML without <metadata> elements
+    const xmlPath = path.join(__dirname, 'fixtures', 'no_metadata_tickets.xml');
+    const response = await request(app)
+      .post('/tickets/import')
+      .attach('file', xmlPath)
+      .expect(201);
+
+    // All tickets should import successfully even without metadata
+    response.body.tickets.forEach((ticket: any) => {
+      expect(ticket).toHaveProperty('customer_id');
+      expect(ticket).toHaveProperty('customer_email');
+      expect(ticket).toHaveProperty('subject');
+      expect(ticket).not.toHaveProperty('metadata');
+    });
+  });
 });
