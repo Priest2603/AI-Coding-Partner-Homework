@@ -2,24 +2,45 @@
 
 This document describes the public REST API for managing customer support tickets.
 
+## Table of Contents
+
+- [Base URL](#base-url)
+- [Content Types](#content-types)
+- [Error Handling](#error-handling)
+- [Data Models](#data-models)
+  - [Enums](#enums)
+  - [Metadata](#metadata)
+  - [CreateTicket](#createticket-request-body)
+  - [Ticket](#ticket-response-object)
+- [API Endpoints](#api-endpoints)
+  - [Health Check](#health-check)
+  - [Ticket Operations](#ticket-operations)
+  - [Bulk Import](#bulk-import)
+- [Common Failures](#common-failures)
+
+---
+
 ## Base URL
 
-- Default (local): `http://localhost:3000`
-- All endpoints below are relative to the base URL.
+- **Local Development**: `http://localhost:3000`
+- All endpoints below are relative to the base URL
 
 ## Content Types
 
-- JSON endpoints use:
-  - Request: `Content-Type: application/json`
-  - Response: `application/json`
-- File upload uses:
-  - Request: `multipart/form-data`
+**JSON Endpoints:**
+- Request: `Content-Type: application/json`
+- Response: `application/json`
 
-## Errors
+**File Upload:**
+- Request: `multipart/form-data`
 
-All error responses are JSON.
+---
 
-### Standard error format
+## Error Handling
+
+All error responses return JSON with a consistent structure.
+
+### Standard Error Format
 
 ```json
 {
@@ -28,9 +49,9 @@ All error responses are JSON.
 }
 ```
 
-### Validation error format
+### Validation Error Format
 
-When request body validation fails (e.g., invalid email, wrong enum value), the API returns `400`:
+When request body validation fails (e.g., invalid email, wrong enum value), the API returns HTTP `400`:
 
 ```json
 {
@@ -42,16 +63,16 @@ When request body validation fails (e.g., invalid email, wrong enum value), the 
 }
 ```
 
-### Common status codes
+### HTTP Status Codes
 
-| Status | Meaning |
-|-------:|---------|
-| 200 | Success |
-| 201 | Created (including bulk import) |
-| 204 | Deleted (no response body) |
-| 400 | Invalid request / validation failed |
-| 404 | Resource not found |
-| 500 | Internal server error |
+| Status Code | Meaning |
+|------------:|---------|
+| **200** | Success |
+| **201** | Created (including bulk import) |
+| **204** | Deleted (no response body) |
+| **400** | Invalid request / validation failed |
+| **404** | Resource not found |
+| **500** | Internal server error |
 
 ---
 
@@ -59,40 +80,39 @@ When request body validation fails (e.g., invalid email, wrong enum value), the 
 
 ### Enums
 
-**Category**
-- `account_access`
-- `technical_issue`
-- `billing_question`
-- `feature_request`
-- `bug_report`
-- `other`
+#### Category
 
-**Priority**
-- `urgent`
-- `high`
-- `medium`
-- `low`
+```
+account_access | technical_issue | billing_question | feature_request | bug_report | other
+```
 
-**Status**
-- `new`
-- `in_progress`
-- `waiting_customer`
-- `resolved`
-- `closed`
+#### Priority
 
-**Metadata.source**
-- `web_form`
-- `email`
-- `api`
-- `chat`
-- `phone`
+```
+urgent | high | medium | low
+```
 
-**Metadata.device_type**
-- `desktop`
-- `mobile`
-- `tablet`
+#### Status
+
+```
+new | in_progress | waiting_customer | resolved | closed
+```
+
+#### Metadata.source
+
+```
+web_form | email | api | chat | phone
+```
+
+#### Metadata.device_type
+
+```
+desktop | mobile | tablet
+```
 
 ### Metadata
+
+Optional metadata object for tracking ticket source and context:
 
 ```json
 {
@@ -102,9 +122,10 @@ When request body validation fails (e.g., invalid email, wrong enum value), the 
 }
 ```
 
-- `source` is required if `metadata` is provided.
-- `browser` is optional.
-- `device_type` is optional.
+**Fields:**
+- `source` *(required if metadata is provided)* - Origin of the ticket
+- `browser` *(optional)* - Browser information
+- `device_type` *(optional)* - Type of device used
 
 ### CreateTicket (request body)
 
@@ -131,14 +152,14 @@ Validation rules (high-level):
 - `tags`: defaults to `[]` if omitted
 - `assigned_to`: optional, may be `null`
 
-### Ticket (response object)
+### Ticket (Response Object)
 
-A ticket returned by the API includes server-generated fields:
+Complete ticket object returned by the API, includes all fields from [CreateTicket](#createticket-request-body) plus server-generated fields:
 
 ```json
 {
   "id": "3b5b7a3e-0b1e-4d76-a2f7-7fd0c2d4f9a2",
-  "subject": "Can’t access my account",
+  "subject": "Can't access my account",
   "category": "account_access",
   "priority": "urgent",
   "status": "new",
@@ -148,27 +169,32 @@ A ticket returned by the API includes server-generated fields:
 }
 ```
 
-Notes:
-- `created_at` and `updated_at` are ISO-8601 datetimes.
-- `resolved_at` is set automatically when `status` becomes `resolved` or `closed`.
+#### Server-Generated Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | string (UUID) | Unique ticket identifier |
+| `created_at` | string (ISO-8601) | Ticket creation timestamp |
+| `updated_at` | string (ISO-8601) | Last update timestamp |
+| `resolved_at` | string (ISO-8601) \| null | Set automatically when status becomes `resolved` or `closed` |
 
 ---
 
-## Endpoints
+## API Endpoints
 
-### Health
+### Health Check
 
-#### GET /health
+#### `GET /health`
 
 Checks if the service is running.
 
-**Response (200)**
+**Response (`200`)**
 
 ```json
 { "status": "ok" }
 ```
 
-**cURL**
+**Example Request**
 
 ```bash
 curl -s http://localhost:3000/health
@@ -176,26 +202,26 @@ curl -s http://localhost:3000/health
 
 ---
 
-### Tickets
+### Ticket Operations
 
-#### POST /tickets
+#### `POST /tickets`
 
 Create a new ticket.
 
-**Query parameters**
+**Query Parameters**
 
-| Name | Type | Description |
-|------|------|-------------|
-| `auto_classify` | boolean | If `true`, forces automatic category/priority assignment (even if you provided them). |
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `auto_classify` | boolean | If `true`, forces automatic [category](#category)/[priority](#priority) assignment (even if provided in request body) |
 
-Automatic classification behavior:
-- If `auto_classify=true`, the API classifies the ticket using the provided `subject` + `description`.
-- If `category` or `priority` is missing, the API also classifies and fills them in.
-- When auto-classification runs, the response includes `classification_confidence` and `classification_reasoning`.
+**Auto-classification Behavior:**
+- When `auto_classify=true`: API classifies the ticket using `subject` + `description`
+- When `category` or `priority` is missing: API auto-classifies and fills them in
+- When auto-classification runs: Response includes `classification_confidence` and `classification_reasoning`
 
-**Request body**: CreateTicket (see model above)
+**Request Body**: [CreateTicket](#createticket-request-body)
 
-**Response (201)**
+**Response (`201`)**
 
 If auto-classification runs:
 
@@ -214,7 +240,7 @@ If auto-classification runs:
 }
 ```
 
-**cURL (basic create)**
+**Example Request (Basic Create)**
 
 ```bash
 curl -s -X POST http://localhost:3000/tickets \
@@ -233,7 +259,7 @@ curl -s -X POST http://localhost:3000/tickets \
   }'
 ```
 
-**cURL (force auto-classify)**
+**Example Request (Force Auto-classify)**
 
 ```bash
 curl -s -X POST 'http://localhost:3000/tickets?auto_classify=true' \
@@ -249,19 +275,19 @@ curl -s -X POST 'http://localhost:3000/tickets?auto_classify=true' \
 
 ---
 
-#### GET /tickets
+#### `GET /tickets`
 
 List tickets, optionally filtered.
 
-**Query parameters**
+**Query Parameters**
 
-| Name | Type | Description |
-|------|------|-------------|
-| `category` | Category | Filter by category |
-| `priority` | Priority | Filter by priority |
-| `status` | Status | Filter by status |
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `category` | [Category](#category) | Filter by category |
+| `priority` | [Priority](#priority) | Filter by priority |
+| `status` | [Status](#status) | Filter by status |
 
-**Response (200)**
+**Response (`200`)**
 
 ```json
 {
@@ -281,13 +307,13 @@ List tickets, optionally filtered.
 }
 ```
 
-**cURL (no filters)**
+**Example Request (No Filters)**
 
 ```bash
 curl -s http://localhost:3000/tickets
 ```
 
-**cURL (with filters)**
+**Example Request (With Filters)**
 
 ```bash
 curl -s 'http://localhost:3000/tickets?category=account_access&priority=urgent&status=new'
@@ -295,19 +321,19 @@ curl -s 'http://localhost:3000/tickets?category=account_access&priority=urgent&s
 
 ---
 
-#### GET /tickets/:id
+#### `GET /tickets/:id`
 
-Get a single ticket by id.
+Get a single ticket by ID.
 
-**Response (200)**: Ticket
+**Response (`200`)**: [Ticket](#ticket-response-object)
 
-**Response (404)**
+**Response (`404`)**
 
 ```json
 { "error": "Ticket with id '...' not found" }
 ```
 
-**cURL**
+**Example Request**
 
 ```bash
 curl -s http://localhost:3000/tickets/3b5b7a3e-0b1e-4d76-a2f7-7fd0c2d4f9a2
@@ -315,15 +341,17 @@ curl -s http://localhost:3000/tickets/3b5b7a3e-0b1e-4d76-a2f7-7fd0c2d4f9a2
 
 ---
 
-#### PUT /tickets/:id
+#### `PUT /tickets/:id`
 
-Update a ticket.
+Update an existing ticket.
 
-- Body supports the same fields as CreateTicket, but all fields are optional.
-- Values are validated the same way as on creation.
-- If you set `status` to `resolved` or `closed`, `resolved_at` is set automatically (if it was previously empty).
+**Request Body**
 
-**Request body example**
+Supports the same fields as [CreateTicket](#createticket-request-body), but all fields are optional:
+- Values are validated the same way as on creation
+- Setting `status` to `resolved` or `closed` automatically sets `resolved_at` (if previously empty)
+
+**Request Body Example**
 
 ```json
 {
@@ -333,9 +361,9 @@ Update a ticket.
 }
 ```
 
-**Response (200)**: updated Ticket
+**Response (`200`)**: Updated [Ticket](#ticket-response-object)
 
-**cURL**
+**Example Request**
 
 ```bash
 curl -s -X PUT http://localhost:3000/tickets/3b5b7a3e-0b1e-4d76-a2f7-7fd0c2d4f9a2 \
@@ -345,13 +373,13 @@ curl -s -X PUT http://localhost:3000/tickets/3b5b7a3e-0b1e-4d76-a2f7-7fd0c2d4f9a
 
 ---
 
-#### DELETE /tickets/:id
+#### `DELETE /tickets/:id`
 
 Delete a ticket.
 
-**Response (204)**: no body
+**Response (`204`)**: No content
 
-**cURL**
+**Example Request**
 
 ```bash
 curl -i -X DELETE http://localhost:3000/tickets/3b5b7a3e-0b1e-4d76-a2f7-7fd0c2d4f9a2
@@ -359,11 +387,11 @@ curl -i -X DELETE http://localhost:3000/tickets/3b5b7a3e-0b1e-4d76-a2f7-7fd0c2d4
 
 ---
 
-#### POST /tickets/:id/auto-classify
+#### `POST /tickets/:id/auto-classify`
 
-Auto-classify an existing ticket (updates its `category` and `priority`).
+Automatically classify an existing ticket (updates its [category](#category) and [priority](#priority)).
 
-**Response (200)**
+**Response (`200`)**
 
 ```json
 {
@@ -387,7 +415,7 @@ Auto-classify an existing ticket (updates its `category` and `priority`).
 }
 ```
 
-**cURL**
+**Example Request**
 
 ```bash
 curl -s -X POST http://localhost:3000/tickets/3b5b7a3e-0b1e-4d76-a2f7-7fd0c2d4f9a2/auto-classify
@@ -397,18 +425,18 @@ curl -s -X POST http://localhost:3000/tickets/3b5b7a3e-0b1e-4d76-a2f7-7fd0c2d4f9
 
 ### Bulk Import
 
-#### POST /tickets/import
+#### `POST /tickets/import`
 
 Upload a CSV/JSON/XML file and import multiple tickets at once.
 
-**Request**
+**Request Format**
 
-- `multipart/form-data`
+- Content-Type: `multipart/form-data`
 - Field name: `file`
-- Supported filename extensions: `.csv`, `.json`, `.xml`
-- File size limit: 10MB
+- Supported extensions: `.csv`, `.json`, `.xml`
+- File size limit: **10MB**
 
-**Response (201)**
+**Response (`201`)**
 
 Always returns a summary, including partial failures:
 
@@ -430,83 +458,88 @@ Always returns a summary, including partial failures:
 }
 ```
 
-**cURL (CSV)**
+**Example Request (CSV)**
 
 ```bash
 curl -s -X POST http://localhost:3000/tickets/import \
   -F 'file=@./tests/fixtures/valid_tickets.csv'
 ```
 
-**cURL (JSON)**
+**Example Request (JSON)**
 
 ```bash
 curl -s -X POST http://localhost:3000/tickets/import \
   -F 'file=@./tests/fixtures/valid_tickets.json'
 ```
 
-**cURL (XML)**
+**Example Request (XML)**
 
 ```bash
 curl -s -X POST http://localhost:3000/tickets/import \
   -F 'file=@./tests/fixtures/valid_tickets.xml'
 ```
 
-##### Import file formats
+#### Import File Formats
 
-**CSV**
+##### CSV Format
 
-- Required columns:
-  - `customer_id`, `customer_email`, `customer_name`, `subject`, `description`, `category`, `priority`, `status`
-- Optional columns:
-  - `assigned_to`, `tags`
-  - Metadata fields (any of these names):
-    - `metadata_source` or `source`
-    - `metadata_browser` or `browser`
-    - `metadata_device_type` or `device_type`
-- `tags` can be a pipe-separated string, e.g. `login|2fa|vip` (it will be converted into an array).
+**Required Columns:**
+- `customer_id`, `customer_email`, `customer_name`
+- `subject`, `description`
+- `category`, `priority`, `status`
 
-**JSON**
+**Optional Columns:**
+- `assigned_to`
+- `tags` (pipe-separated string, e.g., `login|2fa|vip`)
+- Metadata fields:
+  - `metadata_source` or `source`
+  - `metadata_browser` or `browser`
+  - `metadata_device_type` or `device_type`
 
-- Accepts either:
-  - a single ticket object, or
-  - an array of ticket objects
-- Each object must match the CreateTicket model.
+##### JSON Format
 
-**XML**
+Accepts either:
+- A single ticket object, or
+- An array of ticket objects
 
-- Accepts either of these root structures:
-  - `<tickets><ticket>...</ticket></tickets>`
-  - `<ticket>...</ticket>`
-- Tags can be provided as:
-  - `<tags><tag>a</tag><tag>b</tag></tags>`
+Each object must match the [CreateTicket](#createticket-request-body) schema.
+
+##### XML Format
+
+Accepts either root structure:
+- `<tickets><ticket>...</ticket></tickets>` (multiple tickets)
+- `<ticket>...</ticket>` (single ticket)
+
+Tags can be provided as:
+- `<tags><tag>a</tag><tag>b</tag></tags>`
 
 ---
 
-## Examples: Common Failures
+## Common Failures
 
-### Invalid filter value
+### Invalid Filter Value
 
-Request:
+**Request:**
 
 ```bash
 curl -s 'http://localhost:3000/tickets?priority=super-high'
 ```
 
-Response (400):
+**Response (`400`):**
 
 ```json
 { "error": "Invalid priority filter: super-high" }
 ```
 
-### Missing import file
+### Missing Import File
 
-Request:
+**Request:**
 
 ```bash
 curl -s -X POST http://localhost:3000/tickets/import
 ```
 
-Response (400):
+**Response (`400`):**
 
 ```json
 { "error": "No file uploaded. Please provide a file with field name \"file\"" }

@@ -2,6 +2,17 @@
 
 Customer support ticket management API built with **Node.js + Express + TypeScript**. It supports **multi-format bulk import** (CSV/JSON/XML), **automatic ticket classification** (category + priority), filtering, and a comprehensive Jest test suite with coverage thresholds.
 
+## Table of Contents
+
+- [Features](#features)
+- [Documentation](#documentation)
+- [Architecture](#architecture-high-level)
+- [Installation & Setup](#installation--setup)
+- [How to Run Tests](#how-to-run-tests)
+- [Project Structure](#project-structure)
+
+---
+
 ## Features
 
 - **Ticket CRUD API**: create, list (with filtering), read, update, delete
@@ -13,41 +24,45 @@ Customer support ticket management API built with **Node.js + Express + TypeScri
 
 ## Documentation
 
-- API reference (endpoints, schemas, examples): [API_REFERENCE.md](docs/API_REFERENCE.md)
-- Architecture overview (components, flows, decisions): [ARCHITECTURE.md](docs/ARCHITECTURE.md)
-- QA testing guide (how to run tests, fixtures, manual checklist): [TESTING_GUIDE.md](docs/TESTING_GUIDE.md)
+📖 **Comprehensive Documentation:**
+
+- **[API Reference](docs/API_REFERENCE.md)** - Complete API endpoints, schemas, and examples
+- **[Architecture](docs/ARCHITECTURE.md)** - System components, data flows, and design decisions
+- **[Testing Guide](docs/TESTING_GUIDE.md)** - How to run tests, fixtures, and manual QA checklist
 
 ## Architecture (High Level)
 
 ```mermaid
 flowchart LR
-  Client[API Consumer\n(Postman / Tests / UI)] -->|HTTP JSON / multipart| Express[Express App\nsrc/index.ts]
+  Client["API Consumer<br/>(Postman / Tests / UI)"] -->|HTTP JSON / multipart| Express["Express App<br/>src/index.ts"]
 
-  Express --> Tickets[Ticket Routes\nsrc/routes/tickets.ts]
-  Express --> Import[Import Routes\nsrc/routes/import.ts]
+  Express --> Tickets["Ticket Routes<br/>src/routes/tickets.ts"]
+  Express --> Import["Import Routes<br/>src/routes/import.ts"]
 
-  Tickets --> Zod[Zod Schemas\nsrc/types/ticket.ts]
-  Tickets --> Classifier[Classification Service\nsrc/services/classificationService.ts]
-  Tickets --> Storage[Ticket Storage\n(in-memory)\nsrc/services/ticketStorage.ts]
+  Tickets --> Zod["Zod Schemas<br/>src/types/ticket.ts"]
+  Tickets --> Classifier["Classification Service<br/>src/services/classificationService.ts"]
+  Tickets --> Storage["Ticket Storage<br/>(in-memory)<br/>src/services/ticketStorage.ts"]
 
-  Import --> Multer[Multer Upload\n(memory storage)]
-  Import --> Parsers[Parsers\nsrc/parsers/*]
+  Import --> Multer["Multer Upload<br/>(memory storage)"]
+  Import --> Parsers["Parsers<br/>src/parsers/*"]
   Parsers --> CSV[csv-parse]
   Parsers --> XML[fast-xml-parser]
   Import --> Storage
 
-  Express --> Errors[Error Handler Middleware\nsrc/middleware/errorHandler.ts]
-  Express --> Logger[Logger\nsrc/services/logger.ts]
+  Express --> Errors["Error Handler Middleware<br/>src/middleware/errorHandler.ts"]
+  Express --> Logger["Logger<br/>src/services/logger.ts"]
 ```
+
+---
 
 ## Installation & Setup
 
 ### Prerequisites
 
-- Node.js **18+** (Node 20/22 recommended)
-- npm (ships with Node)
+- **Node.js 18+** (Node 20/22 recommended)
+- **npm** (ships with Node)
 
-### Install
+### Installation
 
 From the repository root:
 
@@ -56,15 +71,15 @@ cd AI-Coding-Partner-Homework/homework-2
 npm install
 ```
 
-### Run locally
+### Run Locally
 
-- Dev (auto-reload):
+**Development Mode** (with auto-reload):
 
 ```bash
 npm run dev
 ```
 
-- Production build + start:
+**Production Mode**:
 
 ```bash
 npm run build
@@ -73,37 +88,45 @@ npm start
 
 ### Configuration
 
-- `PORT` (optional): defaults to `3000`
+| Environment Variable | Default | Description |
+|---------------------|---------|-------------|
+| `PORT` | `3000` | Server port |
 
-Quick health check:
+**Health Check:**
 
 ```bash
 curl http://localhost:3000/health
 ```
 
+---
+
 ## How to Run Tests
 
-- Run unit/integration tests with coverage:
+**Full Test Suite** (with coverage):
 
 ```bash
 npm test
 ```
 
-- Watch mode:
+**Watch Mode**:
 
 ```bash
 npm run test:watch
 ```
 
-- Load test script (concurrent requests):
+**Load Test** (concurrent requests):
 
 ```bash
 npm run test:load
 ```
 
-Notes:
-- Coverage output is written to `coverage/`.
-- Jest enforces global thresholds (branches/functions/lines/statements) at **85%**.
+### Test Coverage
+
+- Coverage reports are generated in `coverage/`
+- **Global threshold**: 85% (branches, functions, lines, statements)
+- View HTML report: `open coverage/lcov-report/index.html`
+
+---
 
 ## Project Structure
 
