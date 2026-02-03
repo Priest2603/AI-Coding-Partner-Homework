@@ -1,0 +1,3 @@
+customer_id,customer_email,customer_name,subject,description,category,priority,status,assigned_to,tags
+CUST100,alice@example.com,Alice Cooper,Need help with feature,I would like to request a new dashboard feature for analytics,feature_request,medium,new,,analytics|dashboard
+CUST101,charlie@example.com,Charlie Brown,Bug in reporting,The monthly report generation is failing with an error,bug_report,high,new,agent1,bug|report

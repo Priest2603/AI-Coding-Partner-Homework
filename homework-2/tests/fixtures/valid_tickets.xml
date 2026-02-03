@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tickets>
+  <ticket>
+    <customer_id>CUST001</customer_id>
+    <customer_email>david@example.com</customer_email>
+    <customer_name>David Wilson</customer_name>
+    <subject>Invoice not received</subject>
+    <description>I have not received my invoice for the last billing cycle.</description>
+    <category>billing_question</category>
+    <priority>medium</priority>
+    <status>new</status>
+    <assigned_to></assigned_to>
+    <tags>
+      <tag>invoice</tag>
+      <tag>billing</tag>
+    </tags>
+    <metadata>
+      <source>email</source>
+      <browser>Outlook</browser>
+      <device_type>desktop</device_type>
+    </metadata>
+  </ticket>
+  <ticket>
+    <customer_id>CUST002</customer_id>
+    <customer_email>eve@example.com</customer_email>
+    <customer_name>Eve Martinez</customer_name>
+    <subject>Two-factor authentication issues</subject>
+    <description>I am not receiving the 2FA codes on my phone to complete login.</description>
+    <category>account_access</category>
+    <priority>urgent</priority>
+    <status>new</status>
+    <assigned_to>agent1</assigned_to>
+    <tags>
+      <tag>2fa</tag>
+      <tag>login</tag>
+    </tags>
+    <metadata>
+      <source>phone</source>
+      <device_type>mobile</device_type>
+    </metadata>
+  </ticket>
+</tickets>

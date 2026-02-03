@@ -1,0 +1,3 @@
+customer_id,customer_email,customer_name,subject,description,category,priority,status,assigned_to,tags,metadata_source,metadata_browser,metadata_device_type
+CUST001,not-an-email,John Doe,Test,Short desc,account_access,urgent,new,,test,web_form,Chrome,desktop
+CUST002,jane@example.com,Jane Smith,This subject is way too long and exceeds the maximum allowed length of 200 characters which should cause a validation error when we try to import this record into the system because the subject field has strict length constraints that must be enforced,Payment processing issue,billing_question,high,new,,payment,email,Safari,mobile

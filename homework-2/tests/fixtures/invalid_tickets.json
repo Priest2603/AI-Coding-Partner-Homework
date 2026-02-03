@@ -1,0 +1,17 @@
+[
+  {
+    "customer_id": "CUST001",
+    "customer_email": "invalid-email",
+    "customer_name": "Test User",
+    "subject": "Test",
+    "description": "Short",
+    "category": "technical_issue",
+    "priority": "high",
+    "status": "new",
+    "tags": [],
+    "metadata": {
+      "source": "web_form",
+      "device_type": "desktop"
+    }
+  }
+]
