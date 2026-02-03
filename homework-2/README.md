@@ -1,4 +1,12 @@
-# Intelligent Customer Support System (Homework 2)
+# 🎫 Intelligent Customer Support System
+
+> **Student Name**: Denys Usenko
+> **Date Submitted**: February 2, 2026
+> **AI Tools Used**: GitHub Copilot
+
+---
+
+## 📋 Project Overview
 
 Customer support ticket management API built with **Node.js + Express + TypeScript**. It supports **multi-format bulk import** (CSV/JSON/XML), **automatic ticket classification** (category + priority), filtering, and a comprehensive Jest test suite with coverage thresholds.
 
