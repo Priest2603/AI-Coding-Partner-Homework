@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tickets>
+  <ticket>
+    <customer_id>CUST200</customer_id>
+    <customer_email>diana@example.com</customer_email>
+    <customer_name>Diana Prince</customer_name>
+    <subject>Account recovery needed</subject>
+    <description>I need help recovering access to my account after forgetting my password.</description>
+    <category>account_access</category>
+    <priority>urgent</priority>
+    <status>new</status>
+    <assigned_to></assigned_to>
+    <tags>
+      <tag>password</tag>
+      <tag>recovery</tag>
+    </tags>
+  </ticket>
+  <ticket>
+    <customer_id>CUST201</customer_id>
+    <customer_email>frank@example.com</customer_email>
+    <customer_name>Frank Castle</customer_name>
+    <subject>Question about subscription</subject>
+    <description>I have questions about upgrading my subscription plan to the premium tier.</description>
+    <category>billing_question</category>
+    <priority>low</priority>
+    <status>new</status>
+    <assigned_to></assigned_to>
+    <tags>
+      <tag>subscription</tag>
+    </tags>
+  </ticket>
+</tickets>
