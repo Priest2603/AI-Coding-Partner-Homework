@@ -1,0 +1,6 @@
+[project]
+name = "custom-mcp-server"
+version = "0.1.0"
+description = "Custom MCP server for homework-5"
+requires-python = ">=3.10"
+dependencies = ["fastmcp>=2.0.0"]

@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "lorem-mcp": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--with",
+        "fastmcp",
+        "fastmcp",
+        "run",
+        "/path/to/custom-mcp-server/server.py"
+      ]
+    }
+  }
+}
