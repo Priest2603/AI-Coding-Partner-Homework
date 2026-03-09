@@ -10,7 +10,7 @@ def get_words(word_count: int = 30) -> str:
     """Read lorem-ipsum.md and return exactly word_count words."""
     content = LOREM_FILE.read_text()
     words = content.split()
-    return " ".join(words[:word_count])
+    return " ".join(words[:max(0, word_count)])
 
 
 @mcp.resource("lorem://content/default")

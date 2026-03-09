@@ -37,8 +37,19 @@ A FastMCP server exposing lorem ipsum content via:
 | Check | Status |
 |-------|--------|
 | Server starts with `python server.py` | ✅ |
-| MCP config (`mcp.json`) points to server | ✅ |
+| MCP config (`.mcp.json`) points to server | ✅ |
 | `fastmcp` in `pyproject.toml` dependencies | ✅ |
+
+## MCP Server Configuration
+
+All servers are configured in `.mcp.json`:
+
+| Server | Type | Setup Required |
+|--------|------|----------------|
+| **github** | HTTP | Replace `Bearer XXX` with your GitHub PAT |
+| **atlassian** | HTTP/OAuth | Run `/mcp` in Claude → select atlassian → authenticate |
+| **my-filesystem** | stdio | Works out of the box (requires Node.js) |
+| **lorem-mcp** | stdio | Works out of the box (requires `uv`) |
 
 ## Project Structure
 
@@ -46,11 +57,11 @@ A FastMCP server exposing lorem ipsum content via:
 homework-5/
 ├── README.md
 ├── HOWTORUN.md
+├── .mcp.json          # All MCP server configs
 ├── custom-mcp-server/
 │   ├── server.py
 │   ├── lorem-ipsum.md
 │   └── pyproject.toml
-├── mcp.json
 └── docs/screenshots/
 ```
 
