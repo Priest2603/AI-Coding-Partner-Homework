@@ -2,7 +2,7 @@ import { RawTransaction, RawTransactionSchema, REQUIRED_FIELDS, ValidationResult
 import { TransactionMessage } from '../types/message';
 import { isValidCurrency } from '../utils/currencies';
 import { parseDecimal, isPositive } from '../utils/decimal';
-import { createLogger, maskAccountNumber } from '../utils/logger';
+import { createLogger } from '../utils/logger';
 
 const logger = createLogger('transaction_validator');
 
@@ -25,57 +25,34 @@ export function validateTransaction(transaction: any): ValidationResult {
     }
   }
 
-  // If a required field is missing, reject immediately
-  if (reasons.length > 0) {
-    const maskedTxn = transaction.source_account
-      ? maskAccountNumber(JSON.stringify(transaction))
-      : JSON.stringify(transaction);
-
-    logger.warn('Transaction validation failed', {
-      transaction_id: transaction.transaction_id || 'UNKNOWN',
-      reason: reasons[0],
-    });
-
-    return {
-      transaction_id: transaction.transaction_id || 'UNKNOWN',
-      status: 'rejected',
-      reasons,
-      transaction,
-    };
-  }
-
-  // Step 2: Validate amount (must be positive Decimal)
-  try {
-    const amount = parseDecimal(transaction.amount);
-    if (!isPositive(amount)) {
+  // Step 2: Validate amount (must be positive Decimal) — only if field is present
+  if (transaction.amount !== null && transaction.amount !== undefined) {
+    try {
+      const amount = parseDecimal(transaction.amount);
+      if (!isPositive(amount)) {
+        reasons.push('INVALID_AMOUNT');
+      }
+    } catch (error) {
       reasons.push('INVALID_AMOUNT');
     }
-  } catch (error) {
-    reasons.push('INVALID_AMOUNT');
   }
 
-  // Step 3: Validate currency
-  if (!isValidCurrency(transaction.currency)) {
-    reasons.push('INVALID_CURRENCY');
+  // Step 3: Validate currency — only if field is present
+  if (transaction.currency !== null && transaction.currency !== undefined) {
+    if (!isValidCurrency(transaction.currency)) {
+      reasons.push('INVALID_CURRENCY');
+    }
   }
 
   // If any validation failed, reject
   if (reasons.length > 0) {
-    const maskedTxn = maskAccountNumber(
-      JSON.stringify({
-        ...transaction,
-        source_account: transaction.source_account,
-        destination_account: transaction.destination_account,
-      })
-    );
-
     logger.warn('Transaction validation failed', {
-      transaction_id: transaction.transaction_id,
+      transaction_id: transaction.transaction_id || 'UNKNOWN',
       reasons: reasons.join(', '),
     });
 
     return {
-      transaction_id: transaction.transaction_id,
+      transaction_id: transaction.transaction_id || 'UNKNOWN',
       status: 'rejected',
       reasons,
       transaction,

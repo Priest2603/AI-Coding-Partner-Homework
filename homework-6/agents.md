@@ -46,7 +46,7 @@ homework-6/
     output/                     # Agent writes results for next agent
     results/                    # Final outcomes (8 JSON files)
   mcp/
-    server.ts                   # Custom MCP server (get_transaction_status, list_pipeline_results)
+    server.py                   # Custom MCP server (get_transaction_status, list_pipeline_results)
   .claude/
     commands/
       write-spec.md             # Skill: generate specification from template

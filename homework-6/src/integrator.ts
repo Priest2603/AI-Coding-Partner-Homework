@@ -139,7 +139,8 @@ function processTransaction(
         'validation'
       );
       writeResult(txnId, validatedEnvelope);
-      return { ...transaction, status: 'validated' } as any;
+      const validatedResult: ValidatedTransaction = { ...transaction, status: 'validated' };
+      return validatedResult;
     }
 
     // --- Step 5: Write validated result to shared/output/ for fraud detector ---
@@ -256,11 +257,13 @@ export function formatSummaryTable(stats: PipelineStats): string {
       const settled = result as SettledTransaction;
       riskLevel = (settled.fraud_risk_level || '--').padEnd(10);
       fraudScore = (settled.fraud_risk_score?.toString() || '--').padEnd(11);
+      amount = (settled.converted_amount || '--').padEnd(13);
       settledAmount = (settled.settled_amount || '--').padEnd(14);
     } else {
+      const rejected = result as RejectedTransaction;
       riskLevel = '--'.padEnd(10);
       fraudScore = '--'.padEnd(11);
-      amount = '--'.padEnd(13);
+      amount = (rejected.transaction ? `${rejected.transaction.amount} ${rejected.transaction.currency}` : '--').padEnd(13);
       settledAmount = '--'.padEnd(14);
     }
 

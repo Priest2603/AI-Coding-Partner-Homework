@@ -81,7 +81,7 @@ export interface SettledTransaction extends FraudScoredTransaction {
 /**
  * Final pipeline result - either settled or rejected
  */
-export type PipelineResult = SettledTransaction | RejectedTransaction;
+export type PipelineResult = SettledTransaction | RejectedTransaction | ValidatedTransaction;
 
 /**
  * List of required fields in validation order
