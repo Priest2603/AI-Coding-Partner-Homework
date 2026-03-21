@@ -1,0 +1,24 @@
+{
+  "message_id": "9b8e7be1-81f4-43a0-89cd-5ac3c559bf63",
+  "timestamp": "2026-03-21T21:09:31.377Z",
+  "source_agent": "transaction_validator",
+  "target_agent": "results",
+  "message_type": "validation",
+  "data": {
+    "transaction": {
+      "transaction_id": "TXN004",
+      "timestamp": "2026-03-16T02:47:00Z",
+      "source_account": "ACC-1004",
+      "destination_account": "ACC-5500",
+      "amount": "500.00",
+      "currency": "EUR",
+      "transaction_type": "transfer",
+      "description": "Invoice #4471",
+      "metadata": {
+        "channel": "api",
+        "country": "DE"
+      },
+      "status": "validated"
+    }
+  }
+}

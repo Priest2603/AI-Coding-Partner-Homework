@@ -1,0 +1,28 @@
+{
+  "message_id": "e121db17-cbe0-40b7-8737-68e1d58fdcc1",
+  "timestamp": "2026-03-21T21:09:31.377Z",
+  "source_agent": "transaction_validator",
+  "target_agent": "results",
+  "message_type": "transaction",
+  "data": {
+    "transaction_id": "TXN006",
+    "status": "rejected",
+    "reasons": [
+      "INVALID_CURRENCY"
+    ],
+    "transaction": {
+      "transaction_id": "TXN006",
+      "timestamp": "2026-03-16T10:05:00Z",
+      "source_account": "ACC-1006",
+      "destination_account": "ACC-7700",
+      "amount": "200.00",
+      "currency": "XYZ",
+      "transaction_type": "transfer",
+      "description": "Test payment",
+      "metadata": {
+        "channel": "online",
+        "country": "US"
+      }
+    }
+  }
+}
