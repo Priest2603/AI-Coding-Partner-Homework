@@ -1,0 +1,8 @@
+[project]
+name = "pipeline-status-mcp"
+version = "1.0.0"
+description = "FastMCP server for querying banking pipeline results"
+requires-python = ">=3.10"
+dependencies = [
+    "mcp[cli]>=1.0.0",
+]

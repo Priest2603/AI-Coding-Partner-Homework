@@ -1,0 +1,24 @@
+{
+  "message_id": "dabd7089-267f-4f49-8198-9f85b59dee10",
+  "timestamp": "2026-03-21T21:09:31.376Z",
+  "source_agent": "transaction_validator",
+  "target_agent": "results",
+  "message_type": "validation",
+  "data": {
+    "transaction": {
+      "transaction_id": "TXN003",
+      "timestamp": "2026-03-16T09:30:00Z",
+      "source_account": "ACC-1003",
+      "destination_account": "ACC-9999",
+      "amount": "9999.99",
+      "currency": "USD",
+      "transaction_type": "transfer",
+      "description": "Consulting payment",
+      "metadata": {
+        "channel": "online",
+        "country": "US"
+      },
+      "status": "validated"
+    }
+  }
+}
